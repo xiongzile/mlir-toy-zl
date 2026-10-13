@@ -39,7 +39,7 @@ namespace zl {
         }
 
         Token nextToken() {
-            while (true) { // 把和 token 无关的部分全部消费掉，确保走到外面之后一定有 token 或者结束
+            while (true) {
                 if (*P == '#') {
                     while (*P && *P != '\n') {
                         P++;

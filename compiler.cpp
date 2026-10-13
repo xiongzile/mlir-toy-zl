@@ -3,14 +3,13 @@
 //
 
 #include <iostream>
-
-#include "ZLLexer.h"
+#include "Lexer.h"
+#include "AST.h"
 
 int main() {
     zl::Lexer lexer("/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
     auto vs = lexer.lex();
-    for (auto v : vs) {
-        std::cout << "id: " << v.Id << "\n";
-    }
+    zl::ASTContext context(vs);
+    context.Parse();
     return 0;
 }
