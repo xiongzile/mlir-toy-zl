@@ -19,15 +19,23 @@ enum TokenKind {
   END,
 };
 
+struct SourceLocation {
+  int Line;
+  int Col;
+};
+
 struct Token {
   std::string Id;
   TokenKind Kd;
+  SourceLocation Loc;
 };
 class Lexer {
   std::string_view FileName;
   char *Buf;
   const char *P;
-  TokenKind cur;
+  int Line;
+  int Col;
+  std::vector<Token> context;
 
 public:
   Lexer(const char *path) : FileName(path) {
@@ -36,48 +44,68 @@ public:
     int n = fread(Buf, sizeof(char), 1024 * 1024, Fd);
     Buf[n] = 0;
     P = Buf;
+    Line = Col = 1;
   }
 
   Token nextToken() {
     while (true) {
-      if (*P == '#') {
+      while (*P && std::isspace(*P)) {
+        if (*P == '\n') {
+          Line++;
+          Col = 1;
+        } else {
+          Col++;
+        }
+        P++;
+      }
+
+      if (*P == '\n') {
+        Line++;
+        Col = 1;
+        P++;
+      } else if (*P == '#') {
         while (*P && *P != '\n') {
+          Col++;
           P++;
         }
+        P++;
+        Line++;
+        Col = 1;
       } else {
-        while (*P && std::isspace(*P)) {
-          P++;
-        }
-        if (*P != '#')
-          break;
+        break;
       }
     }
 
     if (*P == 0) {
-      return Token{"", END};
+      return Token{"", END, SourceLocation{Line, Col}};
     }
 
     std::string res;
     if (std::isalpha(*P)) {
+      int At = Col;
       while (std::isalnum(*P)) {
         res += *P;
         P++;
+        Col++;
       }
-      return Token{res, ID};
+      return Token{res, ID, SourceLocation{Line, At}};
     }
 
     if (std::isdigit(*P)) {
+      int At = Col;
       while (std::isdigit(*P)) {
         res += *P;
         P++;
+        Col++;
       }
-
-      return Token{res, NUMBER};
+      return Token{res, NUMBER, SourceLocation{Line, At}};
     }
 
+    int At = Col;
     res += *P;
     P++;
-    return Token{res, SYM};
+    Col++;
+    return Token{res, SYM, SourceLocation{Line, At}};
   }
 
   std::vector<Token> lex() {
@@ -90,8 +118,15 @@ public:
         break;
       result.emplace_back(tk);
     }
-
+    context = result;
     return result;
+  }
+
+  void dump() const {
+    for (const auto &token : context) {
+      std::cout << token.Id << ":" << token.Loc.Line << ":" << token.Loc.Col
+                << "\n";
+    }
   }
 
   ~Lexer() { free(Buf); }

@@ -116,6 +116,7 @@ struct ASTContext {
   int Cur;
   Module AST;
   inline static const std::vector<std::string_view> Ops = {"+", "-", "*", "/"};
+  SourceLocation Loc;
 
   ASTContext(std::vector<Token> tks) : Tokens(std::move(tks)), AST(Module{}) {
     Cur = 0;
@@ -348,7 +349,11 @@ struct ASTContext {
     return true;
   }
 
-  Token Next() { return Tokens[Cur++]; }
+  Token Next() {
+    Token Ret = Tokens[Cur++];
+    std::memcpy(&Loc, &Ret.Loc, sizeof Loc);
+    return Ret;
+  }
 
   Token Peek(int i) {
     if (Cur + i >= Tokens.size()) {
