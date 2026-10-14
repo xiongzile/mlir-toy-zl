@@ -9,9 +9,14 @@
 #include "Lexer.h"
 
 namespace zl {
-
+enum NodeKind {
+  CALL,
+  VAR_DECLARATION,
+  RETURN,
+};
 struct Value {
   bool IsValid;
+  NodeKind Kd;
   std::string Name;
   Value(bool IsValid, std::string str)
       : IsValid(IsValid), Name(std::move(str)) {}
@@ -250,6 +255,7 @@ struct ASTContext {
       ConsumeToken("=");
       ret->ValExpr = ParseExpr();
     }
+    ret->Kd = VAR_DECLARATION;
     return ret;
   }
 
@@ -258,6 +264,7 @@ struct ASTContext {
     auto *ret = new Return{};
     ret->IsValid = true;
     ret->Val = ParseExpr();
+    ret->Kd = RETURN;
     return ret;
   }
 
@@ -277,6 +284,7 @@ struct ASTContext {
     ConsumeToken(")");
     auto *Ret = new CallExpr{CalleeName.Id, Arguments};
     Ret->IsValid = true;
+    Ret->Kd = CALL;
     return Ret;
   }
 
