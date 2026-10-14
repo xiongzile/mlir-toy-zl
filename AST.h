@@ -4,9 +4,9 @@
 
 #ifndef TOY_MLIR_AST_H
 #define TOY_MLIR_AST_H
-#include <utility>
-#include <algorithm>
 #include "Lexer.h"
+#include <algorithm>
+#include <utility>
 
 namespace zl {
 enum NodeKind {
@@ -219,7 +219,7 @@ struct ASTContext {
         }
       }
       ConsumeToken(")");
-      CallExpr* Ret= new CallExpr{CalleeName.Id, Arguments};
+      CallExpr *Ret = new CallExpr{CalleeName.Id, Arguments};
       Ret->Loc = Loc;
       return Ret;
     }
@@ -227,11 +227,11 @@ struct ASTContext {
     // number or variable expr
     Token Var = ConsumeToken();
     if (std::isdigit(Var.Id[0])) {
-      auto* Ret=new NumExpr(std::stoi(Var.Id));
+      auto *Ret = new NumExpr(std::stoi(Var.Id));
       Ret->Loc = Loc;
       return Ret;
     }
-    auto* Ret = new VariableExpr(Var.Id);
+    auto *Ret = new VariableExpr(Var.Id);
     Ret->Loc = Loc;
     return Ret;
   }
@@ -243,7 +243,7 @@ struct ASTContext {
                     [&](std::string_view str) { return str == Id; })) {
       ConsumeToken({"+", "-", "*", "/"});
       Expr *Right = ParseExpr();
-      auto* Ret = new BinaryExpr(Id, Left, Right);
+      auto *Ret = new BinaryExpr(Id, Left, Right);
       Ret->Loc = Loc;
       return Ret;
     }
