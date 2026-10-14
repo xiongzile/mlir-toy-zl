@@ -61,6 +61,7 @@ namespace zl {
         ListExpr(): IsList(false) {}
     };
 
+
     struct Shape: Value {
         std::vector<int> Lane;
 
@@ -78,10 +79,11 @@ namespace zl {
     struct Return : Value {
         Expr* Val;
         explicit Return(Expr* e): Val(e) {}
+        explicit Return(): Val(nullptr) {}
     };
 
     struct FunctionBlock {
-        std::vector<Value> Stmts;
+        std::vector<Value*> Stmts;
     };
 
     struct FunctionDecl {
@@ -193,26 +195,29 @@ namespace zl {
                 return ParseListExpr();
             }
 
-            if (Peek(1).Id == ";") {
-                // number or variable expr
-                Token N = ConsumeToken();
-                if (std::isdigit(N.Id[0])) {
-                    return new NumExpr(std::stoi(N.Id));
+            if (Peek(1).Id == "(") {
+                // call expr
+                Token CalleeName = ConsumeToken();
+                std::vector<Expr*> Arguments{};
+                ConsumeToken("(");
+                while (true) {
+                    if (Peek().Id == ")") break;
+                    Expr* Argument = ParseExpr();
+                    Arguments.emplace_back(Argument);
+                    if (Peek().Id == ",") {
+                        ConsumeToken();
+                    }
                 }
-                return new VariableExpr(N.Id);
+                ConsumeToken(")");
+                return new CallExpr{CalleeName.Id, Arguments};
             }
 
-            // call expr
-            Token CalleeName = ConsumeToken();
-            std::vector<Expr*> Arguments{};
-            ConsumeToken("(");
-            while (true) {
-                if (Peek().Id == ")") break;
-                Expr* Argument = ParseExpr();
-                Arguments.emplace_back(Argument);
-                if (ConsumeToken().Id != ",") break;
+            // number or variable expr
+            Token Var = ConsumeToken();
+            if (std::isdigit(Var.Id[0])) {
+                return new NumExpr(std::stoi(Var.Id));
             }
-            return new CallExpr{CalleeName.Id, Arguments};
+            return new VariableExpr(Var.Id);
         }
 
         Expr* ParseExpr() {
@@ -223,37 +228,39 @@ namespace zl {
             })) {
                 ConsumeToken({"+", "-", "*", "/"});
                 Expr *Right = ParseExpr();
-                ConsumeToken(";");
                 return new BinaryExpr(Id, Left, Right);
             }
-            ConsumeToken(";");
             return Left;
         }
 
-        VarDecl ParseValDecl() {
-            VarDecl ret{};
+        VarDecl* ParseValDecl() {
+            ConsumeToken("var");
+            auto *ret = new VarDecl{};
             Token VarName = ConsumeToken();
-            ret.Name = VarName.Id;
+            ret->Name = VarName.Id;
 
             Token N = ConsumeToken({"=", "<"});
             if (N.Id == "=") {
-                ret.IsValid = true;
-                ret.ValExpr = ParseExpr();
+                ret->IsValid = true;
+                ret->ValExpr = ParseExpr();
             } else {
-                ret.IsValid = true;
-                ret.VarShape = ParseValShape();
+                ret->IsValid = true;
+                ret->VarShape = ParseValShape();
                 ConsumeToken("=");
-                ret.ValExpr = ParseExpr();
+                ret->ValExpr = ParseExpr();
             }
-
             return ret;
         }
 
-        Return ParseReturn() {
-            return Return{ParseExpr()};
+        Return* ParseReturn() {
+            ConsumeToken("return");
+            auto *ret = new Return{};
+            ret->IsValid = true;
+            ret->Val = ParseExpr();
+            return ret;
         }
 
-        CallExpr ParseCall() {
+        CallExpr* ParseCall() {
             Token CalleeName = ConsumeToken();
             std::vector<Expr*> Arguments{};
             ConsumeToken("(");
@@ -261,15 +268,20 @@ namespace zl {
                 if (Peek().Id == ")") break;
                 Expr* Argument = ParseExpr();
                 Arguments.emplace_back(Argument);
-                if (ConsumeToken().Id != ",") break;
+                if (Peek().Id == ",") {
+                    ConsumeToken();
+                }
             }
-            return CallExpr{CalleeName.Id, Arguments};
+            ConsumeToken(")");
+            auto *Ret = new CallExpr{CalleeName.Id, Arguments};
+            Ret->IsValid = true;
+            return Ret;
         }
 
-        // {....;}
-        Value ParseStmt() {
-            Token N = ConsumeToken();
-            if (N.Id == "}") return Value{false, "never_used"};
+        // {....}
+        Value* ParseStmt() {
+            Token N = Peek();
+            if (N.Id == "}") return new Value{false, "never_used"};
 
             if (N.Id == "var") {
                 // variable declaration
@@ -281,20 +293,25 @@ namespace zl {
                 // call statement
                 return ParseCall();
             }
-
         }
 
         // {....; ....; ....;}
         void ParseFunctionBody(FunctionBlock& Block) {
             ConsumeToken("{");
-            std::vector<Value> Stmts;
+            std::vector<Value*> Stmts;
             while (true) {
-                Value Stmt = ParseStmt();
-                if (!Stmt.IsValid) break;
+                if (Peek().Id == "}") break;
+                Value* Stmt = ParseStmt();
+                ConsumeToken(";");
+                if (!Stmt->IsValid) break;
 
                 Stmts.emplace_back(Stmt);
+                if (Peek().Id == ";") {
+                    ConsumeToken();
+                }
             }
             Block.Stmts = Stmts;
+            ConsumeToken("}");
         }
 
         void ParseFunctionDecl(FunctionDecl& Func) {
