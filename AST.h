@@ -11,11 +11,11 @@
 namespace zl {
 
     struct Value {
-        bool isValid;
+        bool IsValid;
         std::string Name;
-        Value(bool isValid, std::string str): isValid(isValid), Name(std::move(str)) {}
+        Value(bool IsValid, std::string str): IsValid(IsValid), Name(std::move(str)) {}
 
-        Value(): isValid(false), Name("unknown") {}
+        Value(): IsValid(false), Name("unknown") {}
     };
 
     struct ParameterDecl : Value {
@@ -237,10 +237,10 @@ namespace zl {
 
             Token N = ConsumeToken({"=", "<"});
             if (N.Id == "=") {
-                ret.isValid = true;
+                ret.IsValid = true;
                 ret.ValExpr = ParseExpr();
             } else {
-                ret.isValid = true;
+                ret.IsValid = true;
                 ret.VarShape = ParseValShape();
                 ConsumeToken("=");
                 ret.ValExpr = ParseExpr();
@@ -290,7 +290,7 @@ namespace zl {
             std::vector<Value> Stmts;
             while (true) {
                 Value Stmt = ParseStmt();
-                if (!Stmt.isValid) break;
+                if (!Stmt.IsValid) break;
 
                 Stmts.emplace_back(Stmt);
             }
