@@ -5,7 +5,7 @@
 #ifndef TOY_MLIR_AST_H
 #define TOY_MLIR_AST_H
 #include <utility>
-
+#include <algorithm>
 #include "Lexer.h"
 
 namespace zl {
