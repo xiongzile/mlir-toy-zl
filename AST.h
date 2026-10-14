@@ -18,6 +18,7 @@ struct Value {
   bool IsValid;
   NodeKind Kd;
   std::string Name;
+  SourceLocation Loc = {-1, -1};
   Value(bool IsValid, std::string str)
       : IsValid(IsValid), Name(std::move(str)) {}
 
@@ -162,6 +163,7 @@ struct ASTContext {
   // [[1, 2, 3], [4, 5, 6]]
   ListExpr *ParseListExpr() {
     ListExpr *Ret = new ListExpr();
+    Ret->Loc = Loc;
     ConsumeToken("[");
     if (Peek().Id == "[") {
       Ret->IsList = true;
@@ -217,15 +219,21 @@ struct ASTContext {
         }
       }
       ConsumeToken(")");
-      return new CallExpr{CalleeName.Id, Arguments};
+      CallExpr* Ret= new CallExpr{CalleeName.Id, Arguments};
+      Ret->Loc = Loc;
+      return Ret;
     }
 
     // number or variable expr
     Token Var = ConsumeToken();
     if (std::isdigit(Var.Id[0])) {
-      return new NumExpr(std::stoi(Var.Id));
+      auto* Ret=new NumExpr(std::stoi(Var.Id));
+      Ret->Loc = Loc;
+      return Ret;
     }
-    return new VariableExpr(Var.Id);
+    auto* Ret = new VariableExpr(Var.Id);
+    Ret->Loc = Loc;
+    return Ret;
   }
 
   Expr *ParseExpr() {
@@ -235,7 +243,9 @@ struct ASTContext {
                     [&](std::string_view str) { return str == Id; })) {
       ConsumeToken({"+", "-", "*", "/"});
       Expr *Right = ParseExpr();
-      return new BinaryExpr(Id, Left, Right);
+      auto* Ret = new BinaryExpr(Id, Left, Right);
+      Ret->Loc = Loc;
+      return Ret;
     }
     return Left;
   }
@@ -243,6 +253,7 @@ struct ASTContext {
   VarDecl *ParseValDecl() {
     ConsumeToken("var");
     auto *ret = new VarDecl{};
+    ret->Loc = Loc;
     Token VarName = ConsumeToken();
     ret->Name = VarName.Id;
 
@@ -263,6 +274,7 @@ struct ASTContext {
   Return *ParseReturn() {
     ConsumeToken("return");
     auto *ret = new Return{};
+    ret->Loc = Loc;
     ret->IsValid = true;
     ret->Val = ParseExpr();
     ret->Kd = RETURN;
@@ -284,6 +296,7 @@ struct ASTContext {
     }
     ConsumeToken(")");
     auto *Ret = new CallExpr{CalleeName.Id, Arguments};
+    Ret->Loc = Loc;
     Ret->IsValid = true;
     Ret->Kd = CALL;
     return Ret;
@@ -292,9 +305,6 @@ struct ASTContext {
   // {....}
   Value *ParseStmt() {
     Token N = Peek();
-    if (N.Id == "}")
-      return new Value{false, "never_used"};
-
     if (N.Id == "var") {
       // variable declaration
       return ParseValDecl();
