@@ -31,10 +31,10 @@ int main(int argc, char *argv[]) {
   switch (emitAction) {
   case zl::DUMPMLIR:
     llvm::outs() << "dump ir\n";
-      break;
+    break;
   case zl::DUMPAST:
     llvm::outs() << "dump ast\n";
-      break;
+    break;
   case zl::DUMPTOKEN:
     lexer.dump();
   }
