@@ -22,6 +22,7 @@ enum TokenKind {
 struct SourceLocation {
   int Line;
   int Col;
+  const char* FileName;
 };
 
 struct Token {
@@ -77,7 +78,7 @@ public:
     }
 
     if (*P == 0) {
-      return Token{"", END, SourceLocation{Line, Col}};
+      return Token{"", END, SourceLocation{Line, Col, FileName.data()}};
     }
 
     std::string res;
@@ -88,7 +89,7 @@ public:
         P++;
         Col++;
       }
-      return Token{res, ID, SourceLocation{Line, At}};
+      return Token{res, ID, SourceLocation{Line, At, FileName.data()}};
     }
 
     if (std::isdigit(*P)) {
@@ -98,14 +99,14 @@ public:
         P++;
         Col++;
       }
-      return Token{res, NUMBER, SourceLocation{Line, At}};
+      return Token{res, NUMBER, SourceLocation{Line, At, FileName.data()}};
     }
 
     int At = Col;
     res += *P;
     P++;
     Col++;
-    return Token{res, SYM, SourceLocation{Line, At}};
+    return Token{res, SYM, SourceLocation{Line, At, FileName.data()}};
   }
 
   std::vector<Token> lex() {
