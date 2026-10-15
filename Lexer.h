@@ -22,7 +22,7 @@ enum TokenKind {
 struct SourceLocation {
   int Line;
   int Col;
-  const char* FileName;
+  const char *FileName;
 };
 
 struct Token {
