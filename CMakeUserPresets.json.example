@@ -1,0 +1,26 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "mlir-debug",
+      "displayName": "Toy + local MLIR Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/cmake-build-mlir-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+        "MLIR_DIR": "/github/llvm-project/build/llvm-libcxx-debug/lib/cmake/mlir",
+        "LLVM_DIR": "/github/llvm-project/build/llvm-libcxx-debug/lib/cmake/llvm"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "mlir-debug",
+      "configurePreset": "mlir-debug",
+      "jobs": 8
+    }
+  ]
+}
