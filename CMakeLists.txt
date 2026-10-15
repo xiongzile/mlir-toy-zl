@@ -21,7 +21,9 @@ add_definitions(${LLVM_DEFINITIONS})
 add_executable(toy_mlir
         compiler.cpp
         Lexer.h
-        AST.h)
+        AST.h
+        mlir/MlirGen.cpp
+        mlir/MlirGen.h)
 
 target_include_directories(toy_mlir SYSTEM PRIVATE
         ${LLVM_INCLUDE_DIRS}

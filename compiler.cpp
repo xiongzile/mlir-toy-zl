@@ -2,8 +2,11 @@
 // Created by Zile Xiong on 2026/10/13.
 //
 
+#include <mlir/IR/MLIRContext.h>
+
 #include "AST.h"
 #include "Lexer.h"
+#include "mlir/MlirGen.h"
 #include "llvm/Support/CommandLine.h"
 
 namespace cl = llvm::cl;
@@ -25,14 +28,18 @@ int main(int argc, char *argv[]) {
   cl::ParseCommandLineOptions(argc, argv, "demo tool\n");
   zl::Lexer lexer("/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
   auto vs = lexer.lex();
-  zl::ASTContext context(vs);
-  context.Parse();
+  zl::ASTContext ast(vs);
+  ast.Parse();
+  mlir::MLIRContext Context;
+  auto module = zl::MlirGenImpl(&Context).mlirGen(ast);
 
   switch (emitAction) {
   case zl::DUMPMLIR:
+    module.dump();
     llvm::outs() << "dump ir\n";
     break;
   case zl::DUMPAST:
+    ast.Dump();
     llvm::outs() << "dump ast\n";
     break;
   case zl::DUMPTOKEN:

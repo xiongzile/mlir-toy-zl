@@ -6,6 +6,7 @@
 #define TOY_MLIR_AST_H
 #include "Lexer.h"
 #include <algorithm>
+#include <llvm/Support/raw_ostream.h>
 #include <utility>
 
 namespace zl {
@@ -417,6 +418,8 @@ struct ASTContext {
   void Musted(std::string_view expect, int i = 0) {
     Musted(std::initializer_list{expect}, i);
   }
+
+  void Dump() { llvm::outs() << "to be implemented\n"; }
 };
 } // namespace zl
 #endif // TOY_MLIR_AST_H
