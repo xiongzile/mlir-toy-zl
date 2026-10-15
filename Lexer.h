@@ -9,7 +9,7 @@
 #include <string_view>
 #include <vector>
 
-namespace zl {
+namespace mlir::zl {
 
 enum TokenKind {
   ID,
@@ -131,6 +131,6 @@ public:
 
   ~Lexer() { free(Buf); }
 };
-} // namespace zl
+} // namespace mlir::zl
 
 #endif // TOY_MLIR_ZLLEXER_H

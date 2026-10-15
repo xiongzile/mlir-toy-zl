@@ -6,13 +6,13 @@
 #define TOY_MLIR_MLIRGEN_H
 #include "../AST.h"
 #include "mlir/IR/BuiltinOps.h"
-namespace zl {
+namespace mlir::zl {
 class MlirGenImpl {
-  mlir::MLIRContext *Context;
+  MLIRContext *Context;
 
 public:
-  MlirGenImpl(mlir::MLIRContext *Ctx) : Context(Ctx) {}
-  mlir::ModuleOp mlirGen(zl::ASTContext &AST);
+  MlirGenImpl(MLIRContext *Ctx) : Context(Ctx) {}
+  ModuleOp* mlirGen(ASTContext &AST);
 };
-} // namespace zl
+} // namespace mlir::zl
 #endif // TOY_MLIR_MLIRGEN_H

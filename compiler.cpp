@@ -11,38 +11,38 @@
 
 namespace cl = llvm::cl;
 
-namespace zl {
+namespace mlir::zl {
 enum ACTION {
   DUMPTOKEN,
   DUMPAST,
   DUMPMLIR,
 };
 }
-static cl::opt<zl::ACTION>
+static cl::opt<mlir::zl::ACTION>
     emitAction("emit", cl::desc("emit ir or ast"),
-               cl::values(clEnumValN(zl::DUMPAST, "ast", "dump ast")),
-               cl::values(clEnumValN(zl::DUMPMLIR, "ir", "dump ir")),
-               cl::values(clEnumValN(zl::DUMPTOKEN, "tokens", "dump tokens")));
+               cl::values(clEnumValN(mlir::zl::DUMPAST, "ast", "dump ast")),
+               cl::values(clEnumValN(mlir::zl::DUMPMLIR, "ir", "dump ir")),
+               cl::values(clEnumValN(mlir::zl::DUMPTOKEN, "tokens", "dump tokens")));
 
 int main(int argc, char *argv[]) {
   cl::ParseCommandLineOptions(argc, argv, "demo tool\n");
-  zl::Lexer lexer("/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
+  mlir::zl::Lexer lexer("/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
   auto vs = lexer.lex();
-  zl::ASTContext ast(vs);
+  mlir::zl::ASTContext ast(vs);
   ast.Parse();
   mlir::MLIRContext Context;
-  auto module = zl::MlirGenImpl(&Context).mlirGen(ast);
+  auto module = mlir::zl::MlirGenImpl(&Context).mlirGen(ast);
 
   switch (emitAction) {
-  case zl::DUMPMLIR:
-    module.dump();
+  case mlir::zl::DUMPMLIR:
+    module->dump();
     llvm::outs() << "dump ir\n";
     break;
-  case zl::DUMPAST:
+  case mlir::zl::DUMPAST:
     ast.Dump();
     llvm::outs() << "dump ast\n";
     break;
-  case zl::DUMPTOKEN:
+  case mlir::zl::DUMPTOKEN:
     lexer.dump();
   }
 

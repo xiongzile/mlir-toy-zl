@@ -9,7 +9,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <utility>
 
-namespace zl {
+namespace mlir::zl {
 enum NodeKind {
   CALL,
   VAR_DECLARATION,
@@ -421,5 +421,5 @@ struct ASTContext {
 
   void Dump() { llvm::outs() << "to be implemented\n"; }
 };
-} // namespace zl
+} // namespace mlir::zl
 #endif // TOY_MLIR_AST_H

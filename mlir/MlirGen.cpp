@@ -3,7 +3,8 @@
 //
 
 #include "MlirGen.h"
-
-mlir::ModuleOp zl::MlirGenImpl::mlirGen(zl::ASTContext &AST) {
-  return new mlir::ModuleOp();
+namespace mlir::zl {
+    ModuleOp* MlirGenImpl::mlirGen(ASTContext &AST) {
+        return new ModuleOp();
+    }
 }
