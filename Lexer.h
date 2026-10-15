@@ -82,9 +82,9 @@ public:
     }
 
     std::string res;
-    if (std::isalpha(*P)) {
+    if (std::isalpha(*P) || *P == '_') {
       int At = Col;
-      while (std::isalnum(*P)) {
+      while (std::isalnum(*P) || *P == '_') {
         res += *P;
         P++;
         Col++;
