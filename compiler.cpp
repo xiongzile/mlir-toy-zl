@@ -18,15 +18,16 @@ enum ACTION {
   DUMPMLIR,
 };
 }
-static cl::opt<mlir::zl::ACTION>
-    emitAction("emit", cl::desc("emit ir or ast"),
-               cl::values(clEnumValN(mlir::zl::DUMPAST, "ast", "dump ast")),
-               cl::values(clEnumValN(mlir::zl::DUMPMLIR, "ir", "dump ir")),
-               cl::values(clEnumValN(mlir::zl::DUMPTOKEN, "tokens", "dump tokens")));
+static cl::opt<mlir::zl::ACTION> emitAction(
+    "emit", cl::desc("emit ir or ast"),
+    cl::values(clEnumValN(mlir::zl::DUMPAST, "ast", "dump ast")),
+    cl::values(clEnumValN(mlir::zl::DUMPMLIR, "ir", "dump ir")),
+    cl::values(clEnumValN(mlir::zl::DUMPTOKEN, "tokens", "dump tokens")));
 
 int main(int argc, char *argv[]) {
   cl::ParseCommandLineOptions(argc, argv, "demo tool\n");
-  mlir::zl::Lexer lexer("/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
+  mlir::zl::Lexer lexer(
+      "/Users/bytedance/Workspace/github/toy-mlir/examples/mul.zl");
   auto vs = lexer.lex();
   mlir::zl::ASTContext ast(vs);
   ast.Parse();

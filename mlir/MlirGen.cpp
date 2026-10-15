@@ -4,7 +4,5 @@
 
 #include "MlirGen.h"
 namespace mlir::zl {
-    ModuleOp* MlirGenImpl::mlirGen(ASTContext &AST) {
-        return new ModuleOp();
-    }
-}
+ModuleOp *MlirGenImpl::mlirGen(ASTContext &AST) { return new ModuleOp(); }
+} // namespace mlir::zl

@@ -12,7 +12,7 @@ class MlirGenImpl {
 
 public:
   MlirGenImpl(MLIRContext *Ctx) : Context(Ctx) {}
-  ModuleOp* mlirGen(ASTContext &AST);
+  ModuleOp *mlirGen(ASTContext &AST);
 };
 } // namespace mlir::zl
 #endif // TOY_MLIR_MLIRGEN_H
