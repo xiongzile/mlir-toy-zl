@@ -17,17 +17,32 @@ include(AddMLIR)
 include(HandleLLVMOptions)
 
 add_definitions(${LLVM_DEFINITIONS})
+include_directories(${LLVM_INCLUDE_DIRS} ${MLIR_INCLUDE_DIRS})
+set(LLVM_TARGET_DEFINITIONS include/ZLDialect.td)
+mlir_tablegen(ZLDialect.h.inc      -gen-dialect-decls)
+mlir_tablegen(ZLDialect.cpp.inc    -gen-dialect-defs)
+mlir_tablegen(ZLOps.h.inc          -gen-op-decls)
+mlir_tablegen(ZLOps.cpp.inc        -gen-op-defs)
+add_public_tablegen_target(ZLDialectIncGen)
 
 add_executable(toy_mlir
         compiler.cpp
         Lexer.h
         AST.h
         mlir/MlirGen.cpp
-        mlir/MlirGen.h)
+        mlir/MlirGen.h
+)
+
+add_dependencies(toy_mlir ZLDialectIncGen)
+
 
 target_include_directories(toy_mlir SYSTEM PRIVATE
         ${LLVM_INCLUDE_DIRS}
         ${MLIR_INCLUDE_DIRS})
+target_include_directories(toy_mlir PRIVATE
+        include
+        ${CMAKE_CURRENT_BINARY_DIR})
+# generated *.inc land here
 target_link_libraries(toy_mlir PRIVATE MLIRIR)
 
 llvm_update_compile_flags(toy_mlir)
