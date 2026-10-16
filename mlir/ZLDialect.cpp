@@ -14,3 +14,7 @@ void zl::ZlDialect::initialize() {
   #include "ZLOps.cpp.inc"
     >();
 }
+
+llvm::LogicalResult zl::ConstantOp::verify() {
+    return llvm::LogicalResult::success();
+}

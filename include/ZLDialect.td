@@ -1,7 +1,7 @@
 #ifndef ZL_DIALECT
 #define ZL_DIALECT
 include "mlir/IR/OpBase.td"
-// Provide a definition of the 'toy' dialect in the ODS framework so that we
+// Provide a definition of the 'zl' dialect in the ODS framework so that we
 // can define our operations.
 def Zl_Dialect : Dialect {
   // The namespace of our dialect, this corresponds 1-1 with the string we
@@ -24,7 +24,7 @@ def Zl_Dialect : Dialect {
   let cppNamespace = "::zl";
 }
 
-// Base class for toy dialect operations. This operation inherits from the base
+// Base class for zl dialect operations. This operation inherits from the base
 // `Op` class in OpBase.td, and provides:
 //   * The parent dialect of the operation.
 //   * The mnemonic for the operation, or the name without the dialect prefix.
@@ -40,7 +40,7 @@ def ConstantOp : Zl_OP<"constant"> {
     Constant operation turns a literal into an SSA value. The data is attached
     to the operation as an attribute. For example:
 
-      %0 = "toy.constant"()
+      %0 = "zl.constant"()
          { value = dense<[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]> : tensor<2x3xf64> }
         : () -> tensor<2x3xf64>
   }];
@@ -58,6 +58,6 @@ def ConstantOp : Zl_OP<"constant"> {
   // operation class that is called after ODS constructs have been verified, for
   // example the types of arguments and results. We implement additional verification
   // in the definition of this `verify` method in the C++ source file.
-  let hasVerifier = 0;
+  let hasVerifier = 1;
 }
 #endif
