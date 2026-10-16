@@ -6,6 +6,9 @@
 #define TOY_MLIR_ZLDIALECT_H
 #include "mlir/IR/Dialect.h"
 #include "mlir/IR/OpDefinition.h"
+#include "mlir/IR/BuiltinTypes.h"
+#include "mlir/Bytecode/BytecodeOpInterface.h"
+#include "mlir/IR/Builders.h"
 
 #include "ZLDialect.h.inc"
 
