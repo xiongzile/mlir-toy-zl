@@ -21,6 +21,6 @@ def Zl_Dialect : Dialect {
   }];
 
   // The C++ namespace that the dialect class definition resides in.
-  let cppNamespace = "toy";
+  let cppNamespace = "::zl";
 }
 #endif

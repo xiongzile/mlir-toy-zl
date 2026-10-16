@@ -31,6 +31,8 @@ add_executable(toy_mlir
         AST.h
         mlir/MlirGen.cpp
         mlir/MlirGen.h
+        include/ZLDialect.h
+        mlir/ZLDialect.cpp
 )
 
 add_dependencies(toy_mlir ZLDialectIncGen)

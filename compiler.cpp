@@ -8,6 +8,7 @@
 #include "Lexer.h"
 #include "mlir/MlirGen.h"
 #include "llvm/Support/CommandLine.h"
+#include "ZLDialect.h"
 
 namespace cl = llvm::cl;
 
@@ -32,6 +33,8 @@ int main(int argc, char *argv[]) {
   mlir::zl::ASTContext ast(vs);
   ast.Parse();
   mlir::MLIRContext Context;
+  Context.loadDialect<zl::ZlDialect>();
+
   auto module = mlir::zl::MlirGenImpl(&Context).mlirGen(ast);
 
   switch (emitAction) {
