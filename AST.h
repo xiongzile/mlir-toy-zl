@@ -95,10 +95,13 @@ struct FunctionBlock {
 
 struct FunctionDecl {
   std::string FunctionName;
-  std::vector<ParameterDecl*> Params;
-  FunctionBlock* Block;
+  std::vector<ParameterDecl *> Params;
+  FunctionBlock *Block;
 
-  explicit FunctionDecl(std::string FuncName, std::vector<ParameterDecl*> Ps, FunctionBlock*B):FunctionName(std::move(FuncName)), Params(std::move(Ps)), Block(std::move(B)) {}
+  explicit FunctionDecl(std::string FuncName, std::vector<ParameterDecl *> Ps,
+                        FunctionBlock *B)
+      : FunctionName(std::move(FuncName)), Params(std::move(Ps)),
+        Block(std::move(B)) {}
 };
 
 struct CallExpr : Expr {
@@ -110,7 +113,7 @@ struct CallExpr : Expr {
 };
 
 struct Module : Value {
-  std::vector<FunctionDecl*> Functions;
+  std::vector<FunctionDecl *> Functions;
 
   explicit Module(const std::vector<FunctionDecl> &vector);
   explicit Module() {}
@@ -133,8 +136,8 @@ struct ASTContext {
   }
 
   // (a, b)
-  std::vector<ParameterDecl*> ParseParameters() {
-    std::vector<ParameterDecl*> ret{};
+  std::vector<ParameterDecl *> ParseParameters() {
+    std::vector<ParameterDecl *> ret{};
     ConsumeToken("(");
 
     while (true) {
@@ -322,7 +325,7 @@ struct ASTContext {
   }
 
   // {....; ....; ....;}
-  FunctionBlock* ParseFunctionBody() {
+  FunctionBlock *ParseFunctionBody() {
     ConsumeToken("{");
     std::vector<Value *> Stmts;
     while (true) {
@@ -342,9 +345,10 @@ struct ASTContext {
     return new FunctionBlock(Stmts);
   }
 
-  FunctionDecl* ParseFunctionDecl() {
+  FunctionDecl *ParseFunctionDecl() {
     Token FunctionName = ConsumeToken();
-    return new FunctionDecl(FunctionName.Id, ParseParameters(), ParseFunctionBody());
+    return new FunctionDecl(FunctionName.Id, ParseParameters(),
+                            ParseFunctionBody());
   }
 
   bool ParseFunction() {
