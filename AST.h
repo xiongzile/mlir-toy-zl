@@ -9,6 +9,7 @@
 #include <llvm/Support/raw_ostream.h>
 #include <utility>
 
+// TODO: I know there's memory leak issue, will fix it later
 namespace mlir::zl {
 enum NodeKind {
   CALL,
