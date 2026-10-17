@@ -29,8 +29,8 @@ def Zl_Dialect : Dialect {
 //   * The parent dialect of the operation.
 //   * The mnemonic for the operation, or the name without the dialect prefix.
 //   * A list of traits for the operation.
-class Zl_OP<string mnemonic, list<Trait> traits = []> :
-    Op<Zl_Dialect, mnemonic, traits>;
+class Zl_OP<string mnemonic, list<Trait> traits = []>
+    : Op<Zl_Dialect, mnemonic, traits>;
 
 def ConstantOp : Zl_OP<"constant"> {
   // Provide a summary and description for this operation. This can be used to
@@ -53,20 +53,21 @@ def ConstantOp : Zl_OP<"constant"> {
   // F64Tensor corresponds to a 64-bit floating-point TensorType.
   let results = (outs F64Tensor);
 
-  // Add additional verification logic to the constant operation. Setting this bit
-  // to `1` will generate a `::llvm::LogicalResult verify()` declaration on the
-  // operation class that is called after ODS constructs have been verified, for
-  // example the types of arguments and results. We implement additional verification
-  // in the definition of this `verify` method in the C++ source file.
+  // Add additional verification logic to the constant operation. Setting this
+  // bit to `1` will generate a `::llvm::LogicalResult verify()` declaration on
+  // the operation class that is called after ODS constructs have been verified,
+  // for example the types of arguments and results. We implement additional
+  // verification in the definition of this `verify` method in the C++ source
+  // file.
   let hasVerifier = 1;
 }
 
 def PrintOp : Zl_OP<"print"> {
-    let summary = "print operation";
-    let description = [{
+  let summary = "print operation";
+  let description = [{
         print the information of a tensor
     }];
 
-    let arguments = (ins F64Tensor:$value);
+  let arguments = (ins F64Tensor:$value);
 }
 #endif

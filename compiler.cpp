@@ -6,9 +6,9 @@
 
 #include "AST.h"
 #include "Lexer.h"
+#include "ZLDialect.h"
 #include "mlir/MlirGen.h"
 #include "llvm/Support/CommandLine.h"
-#include "ZLDialect.h"
 
 namespace cl = llvm::cl;
 

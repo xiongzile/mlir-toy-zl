@@ -9,12 +9,12 @@
 #include "ZLOps.cpp.inc"
 
 void zl::ZlDialect::initialize() {
-    addOperations<
-  #define GET_OP_LIST
-  #include "ZLOps.cpp.inc"
-    >();
+  addOperations<
+#define GET_OP_LIST
+#include "ZLOps.cpp.inc"
+      >();
 }
 
 llvm::LogicalResult zl::ConstantOp::verify() {
-    return llvm::LogicalResult::success();
+  return llvm::LogicalResult::success();
 }
