@@ -60,4 +60,13 @@ def ConstantOp : Zl_OP<"constant"> {
   // in the definition of this `verify` method in the C++ source file.
   let hasVerifier = 1;
 }
+
+def PrintOp : Zl_OP<"print"> {
+    let summary = "print operation";
+    let description = [{
+        print the information of a tensor
+    }];
+
+    let arguments = (ins F64Tensor:$value);
+}
 #endif
