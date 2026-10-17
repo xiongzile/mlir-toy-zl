@@ -94,8 +94,10 @@ struct FunctionBlock {
 
 struct FunctionDecl {
   std::string FunctionName;
-  std::vector<ParameterDecl> Params;
-  FunctionBlock Block;
+  std::vector<ParameterDecl*> Params;
+  FunctionBlock* Block;
+
+  explicit FunctionDecl(std::string FuncName, std::vector<ParameterDecl*> Ps, FunctionBlock*B):FunctionName(std::move(FuncName)), Params(std::move(Ps)), Block(std::move(B)) {}
 };
 
 struct CallExpr : Expr {
@@ -107,7 +109,7 @@ struct CallExpr : Expr {
 };
 
 struct Module : Value {
-  std::vector<FunctionDecl> Functions;
+  std::vector<FunctionDecl*> Functions;
 
   explicit Module(const std::vector<FunctionDecl> &vector);
   explicit Module() {}
@@ -130,10 +132,8 @@ struct ASTContext {
   }
 
   // (a, b)
-  void ParseParameters(std::vector<ParameterDecl> &Params) {
-    if (!Params.empty()) {
-      handleErr("internal error");
-    }
+  std::vector<ParameterDecl*> ParseParameters() {
+    std::vector<ParameterDecl*> ret{};
     ConsumeToken("(");
 
     while (true) {
@@ -141,11 +141,13 @@ struct ASTContext {
       if (N.Id == ")")
         break;
 
-      Params.emplace_back(N.Id);
+      ret.emplace_back(new ParameterDecl(N.Id));
       N = ConsumeToken({",", ")"});
       if (N.Id == ")")
         break;
     }
+
+    return ret;
   }
 
   Shape ParseValShape() {
@@ -319,7 +321,7 @@ struct ASTContext {
   }
 
   // {....; ....; ....;}
-  void ParseFunctionBody(FunctionBlock &Block) {
+  FunctionBlock* ParseFunctionBody() {
     ConsumeToken("{");
     std::vector<Value *> Stmts;
     while (true) {
@@ -335,28 +337,20 @@ struct ASTContext {
         ConsumeToken();
       }
     }
-    Block.Stmts = Stmts;
     ConsumeToken("}");
+    return new FunctionBlock(Stmts);
   }
 
-  void ParseFunctionDecl(FunctionDecl &Func) {
-    std::vector<ParameterDecl> Params;
-    ParseParameters(Params);
-    FunctionBlock Block;
-    ParseFunctionBody(Block);
-    Func.Params = Params;
-    Func.Block = Block;
+  FunctionDecl* ParseFunctionDecl() {
+    Token FunctionName = ConsumeToken();
+    return new FunctionDecl(FunctionName.Id, ParseParameters(), ParseFunctionBody());
   }
 
   bool ParseFunction() {
     Token N = ConsumeToken({"def", "EOF"});
     if (N.Id == "EOF")
       return false;
-
-    Token FunctionName = ConsumeToken();
-    FunctionDecl Func{FunctionName.Id};
-    ParseFunctionDecl(Func);
-    AST.Functions.emplace_back(Func);
+    AST.Functions.emplace_back(ParseFunctionDecl());
     return true;
   }
 
