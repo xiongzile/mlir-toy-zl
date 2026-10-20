@@ -2,3 +2,5 @@ cmake-build-debug
 .idea/
 CMakeUserPresets.json
 cmake-build-mlir-debug/
+.clangd
+.vscode
