@@ -70,4 +70,16 @@ def PrintOp : Zl_OP<"print"> {
 
   let arguments = (ins F64Tensor:$value);
 }
+
+def TransposeOp: Zl_OP<"transpose"> {
+  let summary = "transpose a tensor";
+  let description = [{
+        ...
+    }];
+
+  let arguments = (ins F64ElementsAttr:$value1);
+
+  let results = (outs F64Tensor);
+}
+
 #endif
