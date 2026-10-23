@@ -71,7 +71,7 @@ def PrintOp : Zl_OP<"print"> {
   let arguments = (ins F64Tensor:$value);
 }
 
-def TransposeOp: Zl_OP<"transpose"> {
+def TransposeOp : Zl_OP<"transpose"> {
   let summary = "transpose a tensor";
   let description = [{
         ...
@@ -80,6 +80,38 @@ def TransposeOp: Zl_OP<"transpose"> {
   let arguments = (ins F64ElementsAttr:$value1);
 
   let results = (outs F64Tensor);
+}
+
+def MulOp : Zl_OP<"mul"> {
+  let summary = "mul two tensor";
+  let description = [{
+        ...
+    }];
+
+  let arguments = (ins F64Tensor:$tensor1, F64Tensor:$tensor2);
+
+  let results = (outs F64Tensor);
+}
+
+def ReshapeOp : Zl_OP<"reshape"> {
+  let summary = "reshape the tensor";
+
+  let description = [{
+    ...
+  }];
+
+  let arguments = (ins F64Tensor:$tensor);
+
+  let results = (outs F64Tensor);
+}
+
+def ReturnOp : Zl_OP<"return"> {
+  let summary = "return operation";
+  let description = [{
+        print the information of a tensor
+    }];
+
+  let arguments = (ins Optional<F64Tensor>:$value);
 }
 
 #endif

@@ -5,6 +5,8 @@
 #ifndef TOY_MLIR_AST_H
 #define TOY_MLIR_AST_H
 #include "Lexer.h"
+#include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/IR/Builders.h"
 #include <algorithm>
 #include <llvm/Support/raw_ostream.h>
 #include <utility>
@@ -12,19 +14,22 @@
 // TODO: I know there's memory leak issue, will fix it later
 namespace mlir::zl {
 enum NodeKind {
-  CALL,
-  VAR_DECLARATION,
-  RETURN,
+  UNKNOWN,
+  NK_CALL,
+  NK_VAR_DECL,
+  NK_RETURN,
 };
+
 struct Value {
   bool IsValid;
   NodeKind Kd;
   std::string Name;
   SourceLocation Loc = {-1, -1};
+
   Value(bool IsValid, std::string str)
       : IsValid(IsValid), Name(std::move(str)) {}
 
-  Value() : IsValid(false), Name("unknown") {}
+  Value() : IsValid(false), Kd(UNKNOWN), Name("unknown") {}
 };
 
 struct ParameterDecl : Value {
@@ -93,7 +98,7 @@ struct FunctionBlock {
   std::vector<Value *> Stmts;
 };
 
-struct FunctionDecl {
+struct FunctionDecl : Value {
   std::string FunctionName;
   std::vector<ParameterDecl *> Params;
   FunctionBlock *Block;
@@ -274,7 +279,7 @@ struct ASTContext {
       ConsumeToken("=");
       ret->ValExpr = ParseExpr();
     }
-    ret->Kd = VAR_DECLARATION;
+    ret->Kd = NK_VAR_DECL;
     return ret;
   }
 
@@ -284,7 +289,7 @@ struct ASTContext {
     ret->Loc = Loc;
     ret->IsValid = true;
     ret->Val = ParseExpr();
-    ret->Kd = RETURN;
+    ret->Kd = NK_RETURN;
     return ret;
   }
 
@@ -305,7 +310,7 @@ struct ASTContext {
     auto *Ret = new CallExpr{CalleeName.Id, Arguments};
     Ret->Loc = Loc;
     Ret->IsValid = true;
-    Ret->Kd = CALL;
+    Ret->Kd = NK_CALL;
     return Ret;
   }
 
@@ -347,8 +352,10 @@ struct ASTContext {
 
   FunctionDecl *ParseFunctionDecl() {
     Token FunctionName = ConsumeToken();
-    return new FunctionDecl(FunctionName.Id, ParseParameters(),
-                            ParseFunctionBody());
+    auto *Ret = new FunctionDecl(FunctionName.Id, ParseParameters(),
+                                 ParseFunctionBody());
+    Ret->Loc = Loc;
+    return Ret;
   }
 
   bool ParseFunction() {
