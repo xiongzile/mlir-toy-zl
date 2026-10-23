@@ -24,7 +24,7 @@ struct Value {
   bool IsValid;
   NodeKind Kd;
   std::string Name;
-  SourceLocation Loc = {-1, -1};
+  SourceLocation Loc = {-1, -1, nullptr};
 
   Value(bool IsValid, std::string str)
       : IsValid(IsValid), Name(std::move(str)) {}
@@ -40,6 +40,10 @@ struct Variable : Value {};
 
 struct Expr : Value {
   virtual ~Expr() = default;
+};
+
+struct Stmt : Expr {
+  virtual ~Stmt() = default;
 };
 
 struct BinaryExpr : Expr {
@@ -81,14 +85,14 @@ struct Shape : Value {
   explicit Shape() : Lane({0}) {}
 };
 
-struct VarDecl : Value {
+struct VarDecl : Stmt {
   Shape VarShape;
   Expr *ValExpr;
 
   explicit VarDecl() = default;
 };
 
-struct Return : Value {
+struct Return : Stmt {
   Expr *Val;
   explicit Return(Expr *e) : Val(e) {}
   explicit Return() : Val(nullptr) {}
@@ -109,7 +113,7 @@ struct FunctionDecl : Value {
         Block(std::move(B)) {}
 };
 
-struct CallExpr : Expr {
+struct CallExpr : Stmt {
   std::string Callee;
   std::vector<Expr *> Arguments;
 
@@ -210,7 +214,8 @@ struct ASTContext {
   }
 
   Expr *ParsePrimary() {
-    std::string_view N = Peek().Id;
+    Token Tk = Peek();
+    std::string_view N = Tk.Id;
     if (N == "[") {
       // list expr
       return ParseListExpr();
@@ -373,8 +378,8 @@ struct ASTContext {
   }
 
   Token Peek(int i) {
-    if (Cur + i >= Tokens.size()) {
-      return Token{"", END};
+    if (static_cast<size_t>(Cur + i) >= Tokens.size()) {
+      return Token{"", END, {-1, -1, nullptr}};
     }
     return Tokens[Cur + i];
   }
@@ -396,12 +401,12 @@ struct ASTContext {
   }
 
   Token ConsumeToken(std::string_view expect) {
-    return ConsumeToken(std::initializer_list{expect});
+    return ConsumeToken(std::initializer_list<std::string_view>{expect});
   }
 
   Token ConsumeToken(std::initializer_list<std::string_view> expects) {
-    if (Cur >= Tokens.size())
-      return Token{"EOF", END};
+    if (static_cast<size_t>(Cur) >= Tokens.size())
+      return Token{"EOF", END, {-1, -1, nullptr}};
     Token ret = Next();
     if (std::none_of(expects.begin(), expects.end(),
                      [&](std::string_view item) { return item == ret.Id; })) {
@@ -422,7 +427,7 @@ struct ASTContext {
   }
 
   void Musted(std::string_view expect, int i = 0) {
-    Musted(std::initializer_list{expect}, i);
+    Musted(std::initializer_list<std::string_view>{expect}, i);
   }
 
   void Dump() { llvm::outs() << "to be implemented\n"; }

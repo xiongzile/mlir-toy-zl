@@ -18,6 +18,11 @@ ModuleOp MlirGenImpl::mlirGen(ASTContext &AST) {
 }
 
 void MlirGenImpl::codeGen(OpBuilder *Builder, Module module) {
+  for (const auto *f : module.Functions) {
+    codeGen(Builder, f);
+  }
 }
+
+void MlirGenImpl::codeGen(OpBuilder *Builder, const FunctionDecl *F) {}
 
 } // namespace mlir::zl

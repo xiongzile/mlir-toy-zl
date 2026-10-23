@@ -14,7 +14,7 @@ class MlirGenImpl {
   llvm::SmallVector<func::FuncOp, 8> Funcs;
 
   void codeGen(OpBuilder *Builder, Module module);
-  void codeGen(OpBuilder *Builder, FunctionDecl *F);
+  void codeGen(OpBuilder *Builder, const FunctionDecl *F);
   void codeGen(OpBuilder *Builder, FunctionBlock *B);
   void codeGen(OpBuilder *Builder, CallExpr *CE);
   void codeGen(OpBuilder *Builder, VarDecl *VD);
