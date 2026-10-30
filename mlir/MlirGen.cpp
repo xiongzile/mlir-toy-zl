@@ -14,6 +14,7 @@ ModuleOp MlirGenImpl::mlirGen(ASTContext &AST) {
   auto Module = ModuleOp::create(builder.getUnknownLoc(), "top");
   builder.setInsertionPointToEnd(Module.getBody());
   codeGen(&builder, AST.AST);
+  Module.dump();
   return Module;
 }
 
@@ -23,6 +24,10 @@ void MlirGenImpl::codeGen(OpBuilder *Builder, Module module) {
   }
 }
 
-void MlirGenImpl::codeGen(OpBuilder *Builder, const FunctionDecl *F) {}
+void MlirGenImpl::codeGen(OpBuilder *Builder, const FunctionDecl *F) {
+  auto FOP =
+      func::FuncOp::create(*Builder, Builder->getUnknownLoc(), F->FunctionName,
+                           Builder->getFunctionType({}, {}));
+}
 
 } // namespace mlir::zl

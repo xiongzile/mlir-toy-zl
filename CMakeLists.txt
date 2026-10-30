@@ -45,7 +45,7 @@ target_include_directories(toy_mlir PRIVATE
         include
         ${CMAKE_CURRENT_BINARY_DIR})
 # generated *.inc land here
-target_link_libraries(toy_mlir PRIVATE MLIRIR)
+target_link_libraries(toy_mlir PRIVATE MLIRIR MLIRFuncDialect)
 
 llvm_update_compile_flags(toy_mlir)
 mlir_check_all_link_libraries(toy_mlir)

@@ -34,6 +34,7 @@ int main(int argc, char *argv[]) {
   ast.Parse();
   mlir::MLIRContext Context;
   Context.loadDialect<zl::ZlDialect>();
+  Context.loadDialect<mlir::func::FuncDialect>();
 
   auto module = mlir::zl::MlirGenImpl(&Context).mlirGen(ast);
 
